@@ -19,6 +19,10 @@ var headers = {
   'Content-Type': 'application/json'
 };
 
+var messages = {
+  results: []
+};
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -41,7 +45,6 @@ var requestHandler = function(request, response) {
 
   var body = [];
 
-
   if (request.method === 'POST') {
     statusCode = 201;
     request.on('data', (chunk) => {
@@ -52,14 +55,16 @@ var requestHandler = function(request, response) {
       // console.log(body);
       // console.log('before parse: ', typeof body);
       body = JSON.parse(body);
+      messages.results.push(body);
       console.log('after parse: ', typeof body);
       console.log(body);
     });
   }
 
-  // if () {
-  //   statusCode = 404;
-  // }
+  if (request.url !== '/classes/messages') {
+    statusCode = 404;
+  }
+  console.log(request.url);
 
 
   // See the note below about CORS headers.
@@ -75,9 +80,7 @@ var requestHandler = function(request, response) {
 
   //sresponse.write(JSON.stringify(response.body));
 
-  response.end(JSON.stringify({
-    results: []
-  }));
+  response.end(JSON.stringify(messages));
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
